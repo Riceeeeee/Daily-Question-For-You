@@ -1,0 +1,203 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #ffe4ec, #ffeaf1);
+  color: #3d1f33;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  font-size: 1.4rem;
+  color: #d6336c;
+  margin-bottom: 8px;
+}
+
+.greeting {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #6c5a66;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+.question-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #c2255c;
+}
+
+.question-text {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.answer-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.answer-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #f3b1c8;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 96px;
+  outline: none;
+  background-color: #fff7fb;
+}
+
+.answer-input:focus {
+  border-color: #f06595;
+  box-shadow: 0 0 0 2px rgba(240, 101, 149, 0.2);
+}
+
+.submit-button {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f06595, #ff8787);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(240, 101, 149, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.15s ease;
+}
+
+.submit-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(240, 101, 149, 0.4);
+  opacity: 0.95;
+}
+
+.feedback-message {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: #c2255c;
+}
+
+.streak-message {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #e03131;
+}
+
+.surprise {
+  border-left: 4px solid #f06595;
+  font-size: 0.95rem;
+  background-color: #fff0f6;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6c5a66;
+  margin-top: 12px;
+  padding-bottom: 12px;
+}
+
+.hearts-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.heart {
+  position: absolute;
+  font-size: 1.2rem;
+  opacity: 0.7;
+  animation: float-heart 10s linear infinite;
+}
+
+.heart:nth-child(1) {
+  left: 10%;
+  animation-duration: 9s;
+}
+
+.heart:nth-child(2) {
+  left: 30%;
+  animation-duration: 11s;
+  animation-delay: 2s;
+}
+
+.heart:nth-child(3) {
+  left: 50%;
+  animation-duration: 13s;
+  animation-delay: 4s;
+}
+
+.heart:nth-child(4) {
+  left: 70%;
+  animation-duration: 10s;
+  animation-delay: 1s;
+}
+
+.heart:nth-child(5) {
+  left: 85%;
+  animation-duration: 12s;
+  animation-delay: 3s;
+}
+
+@keyframes float-heart {
+  0% {
+    transform: translateY(100vh) scale(0.8);
+  }
+  50% {
+    transform: translateY(50vh) scale(1);
+  }
+  100% {
+    transform: translateY(-10vh) scale(0.9);
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .app {
+    max-width: 600px;
+    padding: 24px;
+  }
+
+  .header h1 {
+    font-size: 1.6rem;
+  }
+}
+

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Câu Hỏi Cho Em Mỗi Ngày</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="hearts-container">
+    <span class="heart">❤️</span>
+    <span class="heart">💗</span>
+    <span class="heart">💕</span>
+    <span class="heart">💖</span>
+    <span class="heart">💘</span>
+  </div>
+
+  <div class="app">
+    <header class="header">
+      <h1>❤️ Một câu hỏi cho em hôm nay</h1>
+      <p id="greeting" class="greeting"></p>
+      <p id="today" class="date"></p>
+    </header>
+
+    <main>
+      <section class="card question-card">
+        <h2>Câu hỏi hôm nay:</h2>
+        <p id="question-text" class="question-text">Đang tải câu hỏi...</p>
+      </section>
+
+      <section class="card answer-card">
+        <label for="answer" class="answer-label">Câu trả lời của em</label>
+        <textarea id="answer" class="answer-input" rows="4" placeholder="Em trả lời ở đây..."></textarea>
+        <button id="submit-answer" class="submit-button">Gửi câu trả lời ❤️</button>
+        <p id="response-message" class="feedback-message hidden"></p>
+        <p id="streak-message" class="streak-message hidden"></p>
+      </section>
+
+      <section id="surprise" class="card surprise hidden"></section>
+    </main>
+
+    <footer class="footer">
+      <p>Cảm ơn em vì đã mở trang này hôm nay ❤️</p>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
