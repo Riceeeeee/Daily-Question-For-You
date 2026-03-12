@@ -4,7 +4,35 @@ Một ứng dụng web nhỏ, lãng mạn, để em có thể mở mỗi ngày (
 
 Ứng dụng được xây dựng bằng:
 - HTML, CSS, JavaScript (vanilla)
-- Supabase (database + API) để lưu câu trả lời
+- Supabase (database + API) để lưu trạng thái và câu trả lời
+
+## Tính năng hiện tại
+
+- Trang chính:
+  - Hiển thị lời chào theo thời gian trong ngày và ngày hiện tại.
+  - Mỗi ngày một câu hỏi khác, lấy từ `questions.json` theo day-of-year.
+  - Ô cho em nhập câu trả lời và nút **Gửi câu trả lời ❤️**.
+  - Gửi câu trả lời lên Supabase bảng `answers` (lưu câu hỏi, câu trả lời, thời gian, day_number).
+  - Hiện câu phản hồi dễ thương ngẫu nhiên sau khi gửi thành công.
+  - Có thẻ surprise hiển thị ngẫu nhiên một thông điệp dễ thương (~10%).
+- Hệ thống Love Streak và tokens (Supabase bảng `love_state`):
+  - Lưu `current_streak`, `last_answer_date`, `tokens`, `time_capsule_active`.
+  - Khi em trả lời liên tiếp, `current_streak` tăng dần và hiện thông báo dạng  
+    `🔥 Em đã trả lời X ngày liên tiếp rồi đó` (đặc biệt ở mốc 7 ngày).
+  - Thưởng token ở mốc streak 7 ngày (+1 token) và 30 ngày (+3 tokens).
+  - Time Capsule kích hoạt khi em nghỉ 2 ngày liên tiếp, cho phép cứu streak ở lần trả lời tiếp theo.
+  - Token Rescue cho phép dùng token để cứu streak nếu nghỉ từ 3 ngày trở lên.
+- Giao diện Love Streak & Tokens:
+  - Hiển thị số tokens hiện có.
+  - Hiển thị trạng thái Time Capsule đang bật hay tắt.
+  - Nút **Dùng token để cứu streak** (chỉ bật khi còn token).
+- Trang admin:
+  - Trang `admin.html` yêu cầu mật mã để mở (dành cho anh).
+  - Sau khi nhập mật mã loveadmin, anh có thể chọn ngày và xem danh sách câu trả lời từ Supabase.
+  - Mỗi câu trả lời hiển thị thời gian, câu hỏi và nội dung em đã trả lời.
+- Trải nghiệm hình ảnh:
+  - Nền gradient, thẻ card bo tròn, hiệu ứng trái tim bay.
+  - Thiết kế tối ưu cho màn hình điện thoại, phù hợp dùng với thẻ NFC.
 
 ## Cấu trúc dự án
 
@@ -127,4 +155,3 @@ Chỉ cần:
 - Mỗi khi em chạm điện thoại vào thẻ:
   - Trình duyệt sẽ mở trang
   - Hiện lời chào, ngày, câu hỏi hôm nay, chỗ trả lời, streak và các thông điệp dễ thương.
-

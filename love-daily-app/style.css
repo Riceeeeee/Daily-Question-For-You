@@ -187,7 +187,70 @@ body {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+.admin-lock-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 5;
+}
+
+.admin-lock-card h2 {
+  margin-bottom: 8px;
+  color: #c2255c;
+}
+
+.admin-lock-text {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.admin-app .header h1 {
+  font-size: 1.3rem;
+}
+
+.admin-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-filters label {
+  font-size: 0.9rem;
+}
+
+.answers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-answer-item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: #fff7fb;
+  border: 1px solid #f3b1c8;
+}
+
+.admin-answer-meta {
+  font-size: 0.85rem;
+  color: #6c5a66;
+  margin-bottom: 4px;
+}
+
+.admin-answer-question {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.admin-answer-text {
+  font-size: 0.95rem;
 }
 
 @media (min-width: 768px) {
@@ -200,4 +263,3 @@ body {
     font-size: 1.6rem;
   }
 }
-

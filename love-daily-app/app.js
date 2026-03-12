@@ -6,9 +6,9 @@ const submitButton = document.getElementById("submit-answer");
 const responseMessageElement = document.getElementById("response-message");
 const streakMessageElement = document.getElementById("streak-message");
 const surpriseElement = document.getElementById("surprise");
-
-const STREAK_COUNT_KEY = "love_daily_streak_count";
-const LAST_ANSWER_DATE_KEY = "love_daily_last_answer_date";
+const loveTokensElement = document.getElementById("love-tokens-value");
+const timeCapsuleStatusElement = document.getElementById("time-capsule-status");
+const useTokenRescueButton = document.getElementById("use-token-rescue");
 
 const cuteResponses = [
   "Anh thích câu trả lời này ❤️",
@@ -73,53 +73,213 @@ function getRandomItem(list) {
   return list[index];
 }
 
-function calculateStreak(today) {
-  const lastDateRaw = localStorage.getItem(LAST_ANSWER_DATE_KEY);
-  const streakRaw = localStorage.getItem(STREAK_COUNT_KEY);
-  const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-  if (!lastDateRaw || !streakRaw) {
-    return { streak: 1, dateToStore: currentDate.toISOString() };
-  }
-
-  const lastDate = new Date(lastDateRaw);
-  const normalizedLast = new Date(
-    lastDate.getFullYear(),
-    lastDate.getMonth(),
-    lastDate.getDate()
-  );
-
-  const diffMs = currentDate.getTime() - normalizedLast.getTime();
+// Hàm phụ: trả về số ngày chênh lệch giữa hai ngày, đã chuẩn hóa về 0h.
+function getDayDifference(date1, date2) {
+  const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+  const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+  const diffMs = d1.getTime() - d2.getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-
-  const previousStreak = Number(streakRaw) || 1;
-
-  if (diffDays === 0) {
-    return { streak: previousStreak, dateToStore: lastDateRaw, noIncrement: true };
-  }
-
-  if (diffDays === 1) {
-    return { streak: previousStreak + 1, dateToStore: currentDate.toISOString() };
-  }
-
-  return { streak: 1, dateToStore: currentDate.toISOString() };
+  return diffDays;
 }
 
-function updateStreak(today) {
-  const result = calculateStreak(today);
-
-  if (!result.noIncrement) {
-    localStorage.setItem(STREAK_COUNT_KEY, String(result.streak));
-    localStorage.setItem(LAST_ANSWER_DATE_KEY, result.dateToStore);
+function updateLoveStateUI(state) {
+  if (!loveTokensElement || !timeCapsuleStatusElement || !useTokenRescueButton) {
+    return;
   }
 
-  if (result.streak >= 2) {
-    streakMessageElement.textContent = `🔥 Em đã trả lời ${result.streak} ngày liên tiếp rồi đó`;
-    streakMessageElement.classList.remove("hidden");
+  if (!state) {
+    loveTokensElement.textContent = "0";
+    timeCapsuleStatusElement.textContent = "⏳ Chưa có dữ liệu love state";
+    useTokenRescueButton.disabled = true;
+    return;
+  }
+
+  const tokens = state.tokens || 0;
+  loveTokensElement.textContent = String(tokens);
+
+  if (state.time_capsule_active) {
+    timeCapsuleStatusElement.textContent = "⏳ Time Capsule đang được kích hoạt";
+  } else {
+    timeCapsuleStatusElement.textContent = "✅ Time Capsule đang tắt";
+  }
+
+  useTokenRescueButton.disabled = tokens <= 0;
+}
+
+// Cập nhật trạng thái love_state trên Supabase sau khi em gửi câu trả lời.
+// Bảng love_state chỉ có 1 dòng, lưu:
+// - current_streak: số ngày liên tiếp trả lời (theo Supabase)
+// - last_answer_date: ngày cuối cùng trả lời (kiểu date)
+// - tokens: số token cứu streak
+// - time_capsule_active: đang bật time capsule hay không
+async function updateLoveStateAfterAnswer(options = {}) {
+  if (!window.supabase) {
+    return null;
+  }
+
+  const today = new Date();
+  const dateOnly = today.toISOString().slice(0, 10); // YYYY-MM-DD
+
+  const { data, error } = await window.supabase.from("love_state").select("*").limit(1);
+
+  if (error) {
+    console.error("Không tải được love_state:", error);
+    return null;
+  }
+
+  let state = Array.isArray(data) && data.length > 0 ? data[0] : null;
+
+  // Nếu chưa có dòng nào: khởi tạo state mới với streak = 1
+  if (!state) {
+    const insertResult = await window.supabase
+      .from("love_state")
+      .insert([
+        {
+          current_streak: 1,
+          last_answer_date: dateOnly,
+          tokens: 0,
+          time_capsule_active: false
+        }
+      ])
+      .select("*");
+
+    if (insertResult.error) {
+      console.error("Không khởi tạo được love_state:", insertResult.error);
+      return null;
+    }
+
+    const inserted =
+      Array.isArray(insertResult.data) && insertResult.data.length > 0
+        ? insertResult.data[0]
+        : null;
+
+    updateLoveStateUI(inserted);
+    console.log("Love state khởi tạo:", inserted);
+    return inserted;
+  }
+
+  const useTokenRescue = Boolean(options.useTokenRescue);
+
+  // Nếu time capsule đang bật và em trả lời: đây là Time Capsule Rescue miễn phí
+  if (state.time_capsule_active) {
+    const updateResult = await window.supabase
+      .from("love_state")
+      .update({
+        time_capsule_active: false,
+        last_answer_date: dateOnly
+      })
+      .eq("id", state.id)
+      .select("*");
+
+    if (updateResult.error) {
+      console.error("Không cập nhật time capsule:", updateResult.error);
+      return state;
+    }
+
+    const updated =
+      Array.isArray(updateResult.data) && updateResult.data.length > 0
+        ? updateResult.data[0]
+        : state;
+
+    updateLoveStateUI(updated);
+    console.log("Love state sau Time Capsule Rescue:", updated);
+    return updated;
+  }
+
+  const lastDate = state.last_answer_date ? new Date(state.last_answer_date) : null;
+
+  if (!lastDate || Number.isNaN(lastDate.getTime())) {
+    // Nếu dữ liệu cũ không hợp lệ: reset nhẹ
+    state.current_streak = 1;
+    state.last_answer_date = dateOnly;
+  } else {
+    const diffDays = getDayDifference(today, lastDate);
+
+    if (diffDays === 0) {
+      // diff = 0: không làm gì
+    } else if (diffDays === 1) {
+      // diff = 1: tăng streak
+      const newStreak = (state.current_streak || 0) + 1;
+      state.current_streak = newStreak;
+      state.last_answer_date = dateOnly;
+
+      // Thưởng token theo mốc streak
+      if (newStreak === 7) {
+        state.tokens = (state.tokens || 0) + 1;
+      } else if (newStreak === 30) {
+        state.tokens = (state.tokens || 0) + 3;
+      }
+    } else if (diffDays === 2) {
+      // diff = 2: kích hoạt time capsule
+      state.time_capsule_active = true;
+    } else if (diffDays >= 3) {
+      // diff >= 3: cho phép dùng token cứu streak
+      if (useTokenRescue && state.tokens > 0) {
+        state.tokens -= 1;
+        state.last_answer_date = dateOnly;
+        // Khi dùng token rescue: giữ nguyên current_streak
+      } else {
+        // Không dùng rescue: streak reset
+        state.current_streak = 1;
+        state.last_answer_date = dateOnly;
+      }
+    }
+  }
+
+  const { data: updatedData, error: updateError } = await window.supabase
+    .from("love_state")
+    .update({
+      current_streak: state.current_streak,
+      last_answer_date: state.last_answer_date,
+      tokens: state.tokens,
+      time_capsule_active: state.time_capsule_active
+    })
+    .eq("id", state.id)
+    .select("*");
+
+  if (updateError) {
+    console.error("Không lưu được love_state:", updateError);
+    return state;
+  }
+
+  const updatedState =
+    Array.isArray(updatedData) && updatedData.length > 0 ? updatedData[0] : state;
+
+  updateLoveStateUI(updatedState);
+  console.log("Love state sau cập nhật:", updatedState);
+  return updatedState;
+}
+
+async function loadInitialLoveState() {
+  if (!window.supabase) {
+    return;
+  }
+
+  const { data, error } = await window.supabase.from("love_state").select("*").limit(1);
+
+  if (error) {
+    console.error("Không tải được love_state ban đầu:", error);
+    return;
+  }
+
+  const state = Array.isArray(data) && data.length > 0 ? data[0] : null;
+  updateLoveStateUI(state);
+  if (state) {
+    const streak = typeof state.current_streak === "number" ? state.current_streak : 0;
+    if (streak >= 2) {
+      if (streak >= 7) {
+        streakMessageElement.textContent =
+          "🔥 7 ngày liên tiếp! Anh thấy em rất chăm mở trang này đó ❤️";
+      } else {
+        streakMessageElement.textContent =
+          `🔥 Em đã trả lời ${streak} ngày liên tiếp rồi đó`;
+      }
+      streakMessageElement.classList.remove("hidden");
+    }
   }
 }
 
-async function saveAnswer(question, answerText, today) {
+async function saveAnswer(question, answerText, today, dayOfYear) {
   if (!window.supabase) {
     return { error: new Error("Chưa cấu hình Supabase. Vui lòng kiểm tra supabase.js.") };
   }
@@ -128,7 +288,8 @@ async function saveAnswer(question, answerText, today) {
     {
       question,
       answer: answerText,
-      created_at: today.toISOString()
+      created_at: today.toISOString(),
+      day_number: dayOfYear
     }
   ]);
 
@@ -150,6 +311,8 @@ function maybeShowSurprise() {
   }
 }
 
+let shouldUseTokenRescue = false;
+
 async function init() {
   const now = new Date();
   greetingElement.textContent = getGreetingByTime(now);
@@ -157,11 +320,19 @@ async function init() {
 
   maybeShowSurprise();
 
+  loadInitialLoveState();
+
   try {
     const questions = await loadQuestions();
     const dayOfYear = getDayOfYear(now);
     const question = questions[dayOfYear % questions.length];
     questionTextElement.textContent = question;
+
+    if (useTokenRescueButton) {
+      useTokenRescueButton.addEventListener("click", () => {
+        shouldUseTokenRescue = true;
+      });
+    }
 
     submitButton.addEventListener("click", async () => {
       const answerText = answerInput.value.trim();
@@ -175,7 +346,7 @@ async function init() {
 
       submitButton.disabled = true;
 
-      const { error } = await saveAnswer(question, answerText, new Date());
+      const { error } = await saveAnswer(question, answerText, new Date(), dayOfYear);
 
       submitButton.disabled = false;
 
@@ -186,11 +357,38 @@ async function init() {
         return;
       }
 
+      let loveStateAfterAnswer = null;
+
+      try {
+        loveStateAfterAnswer = await updateLoveStateAfterAnswer({
+          useTokenRescue: shouldUseTokenRescue
+        });
+        shouldUseTokenRescue = false;
+      } catch (e) {
+        console.error("Không cập nhật được love_state sau khi trả lời:", e);
+      }
+
       const cute = getRandomItem(cuteResponses);
       responseMessageElement.textContent = cute;
       responseMessageElement.classList.remove("hidden");
 
-      updateStreak(new Date());
+      const streak =
+        loveStateAfterAnswer && typeof loveStateAfterAnswer.current_streak === "number"
+          ? loveStateAfterAnswer.current_streak
+          : 0;
+
+      if (streak >= 2) {
+        if (streak >= 7) {
+          streakMessageElement.textContent =
+            "🔥 7 ngày liên tiếp! Anh thấy em rất chăm mở trang này đó ❤️";
+        } else {
+          streakMessageElement.textContent =
+            `🔥 Em đã trả lời ${streak} ngày liên tiếp rồi đó`;
+        }
+        streakMessageElement.classList.remove("hidden");
+      } else {
+        streakMessageElement.classList.add("hidden");
+      }
     });
   } catch (error) {
     questionTextElement.textContent =
@@ -199,4 +397,3 @@ async function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
-

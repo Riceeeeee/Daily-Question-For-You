@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Câu Hỏi Cho Em Mỗi Ngày</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="hearts-container">
+    <span class="heart">❤️</span>
+    <span class="heart">💗</span>
+    <span class="heart">💕</span>
+    <span class="heart">💖</span>
+    <span class="heart">💘</span>
+  </div>
+
+  <div id="admin-lock" class="admin-lock-overlay">
+    <div class="card admin-lock-card">
+      <h2>Trang dành cho anh</h2>
+      <p class="admin-lock-text">Nhập mật mã để xem lịch sử câu trả lời.</p>
+      <input id="admin-passcode" class="answer-input" type="password" placeholder="Mật mã">
+      <button id="admin-unlock" class="submit-button">Mở trang admin</button>
+      <p id="admin-lock-error" class="feedback-message hidden"></p>
+    </div>
+  </div>
+
+  <div class="app admin-app hidden" id="admin-app">
+    <header class="header">
+      <h1>Trang admin – Lịch sử câu trả lời</h1>
+      <p class="greeting">Chỉ mình anh xem được trang này</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Xem theo ngày</h2>
+        <div class="admin-filters">
+          <label for="filter-date">Chọn ngày:</label>
+          <input type="date" id="filter-date" class="answer-input">
+          <button id="load-answers" class="submit-button">Xem câu trả lời</button>
+        </div>
+        <p id="admin-status" class="feedback-message"></p>
+      </section>
+
+      <section class="card">
+        <h2>Kết quả</h2>
+        <div id="answers-list" class="answers-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.6/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
+
