@@ -311,6 +311,23 @@ function maybeShowSurprise() {
   }
 }
 
+function handleNfcIntro() {
+  if (window.location.pathname !== "/nfc") {
+    return;
+  }
+
+  const introElement = document.getElementById("nfc-intro");
+  if (!introElement) {
+    return;
+  }
+
+  introElement.classList.remove("hidden");
+
+  setTimeout(() => {
+    window.location.replace("/");
+  }, 3000);
+}
+
 let shouldUseTokenRescue = false;
 
 async function init() {
@@ -321,6 +338,8 @@ async function init() {
   maybeShowSurprise();
 
   loadInitialLoveState();
+
+  handleNfcIntro();
 
   try {
     const questions = await loadQuestions();

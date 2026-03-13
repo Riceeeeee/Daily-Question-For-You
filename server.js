@@ -2,7 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const baseDir = path.join(__dirname, "love-daily-app");
+const baseDir = __dirname;
 
 function getContentType(filePath) {
   const ext = path.extname(filePath).toLowerCase();
@@ -18,22 +18,32 @@ const server = http.createServer((req, res) => {
   const filePath = path.join(baseDir, urlPath);
 
   fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
-      res.statusCode = 404;
-      res.setHeader("Content-Type", "text/plain; charset=utf-8");
-      res.end("Không tìm thấy nội dung.");
+    if (!err && stats.isFile()) {
+      res.statusCode = 200;
+      res.setHeader("Content-Type", getContentType(filePath));
+      fs.createReadStream(filePath).pipe(res);
       return;
     }
 
-    res.statusCode = 200;
-    res.setHeader("Content-Type", getContentType(filePath));
-    fs.createReadStream(filePath).pipe(res);
+    const indexPath = path.join(baseDir, "index.html");
+
+    fs.stat(indexPath, (indexErr, indexStats) => {
+      if (indexErr || !indexStats.isFile()) {
+        res.statusCode = 404;
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.end("Không tìm thấy nội dung.");
+        return;
+      }
+
+      res.statusCode = 200;
+      res.setHeader("Content-Type", getContentType(indexPath));
+      fs.createReadStream(indexPath).pipe(res);
+    });
   });
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4173;
 
 server.listen(port, () => {
   console.log(`Server đang chạy tại http://localhost:${port}`);
 });
-

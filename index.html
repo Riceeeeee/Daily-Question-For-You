@@ -15,6 +15,21 @@
     <span class="heart">💘</span>
   </div>
 
+  <div id="nfc-intro" class="nfc-intro hidden">
+    <div class="nfc-intro-hearts">
+      <span class="nfc-intro-heart">❤️</span>
+      <span class="nfc-intro-heart">💗</span>
+      <span class="nfc-intro-heart">💕</span>
+      <span class="nfc-intro-heart">💖</span>
+      <span class="nfc-intro-heart">💘</span>
+    </div>
+    <div class="nfc-intro-content">
+      <div class="nfc-intro-main-heart">❤️</div>
+      <p class="nfc-intro-line">Cảm ơn em đã chạm vào chiếc thẻ này</p>
+      <p class="nfc-intro-line">Hôm nay anh có một câu hỏi dành cho em</p>
+    </div>
+  </div>
+
   <div class="app">
     <header class="header">
       <h1>❤️ Một câu hỏi cho em hôm nay</h1>
@@ -31,7 +46,15 @@
       <section class="card answer-card">
         <label for="answer" class="answer-label">Câu trả lời của em</label>
         <textarea id="answer" class="answer-input" rows="4" placeholder="Em trả lời ở đây..."></textarea>
-        <button id="submit-answer" class="submit-button submit-answer-button">Gửi câu trả lời ❤️</button>
+        <button id="submit-answer" class="submit-button submit-answer-button">
+          <span class="submit-answer-label">Gửi câu trả lời ❤️</span>
+          <span class="submit-rain-drop" data-icon="❤︎"></span>
+          <span class="submit-rain-drop" data-icon="❥"></span>
+          <span class="submit-rain-drop" data-icon="✿"></span>
+          <span class="submit-rain-drop" data-icon="❣︎"></span>
+          <span class="submit-rain-drop" data-icon="❧"></span>
+          <span class="submit-rain-drop" data-icon="✦"></span>
+        </button>
         <p id="response-message" class="feedback-message hidden"></p>
         <p id="streak-message" class="streak-message hidden"></p>
       </section>
