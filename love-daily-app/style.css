@@ -104,6 +104,32 @@ body {
   opacity: 0.95;
 }
 
+.submit-answer-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-answer-button::before {
+  content: "✧･ﾟ: *✧･ﾟ:* ✿ *:･ﾟ✧*:･ﾟ✧";
+  position: absolute;
+  left: -100%;
+  top: 70%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  opacity: 0.9;
+  pointer-events: none;
+  animation: submit-snake 6s linear infinite;
+}
+
+@keyframes submit-snake {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
 .feedback-message {
   margin-top: 10px;
   font-size: 0.95rem;
