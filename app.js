@@ -20,22 +20,35 @@ function handleFirstVisitRedirect() {
   }
 
   let visited;
+  let flowState;
 
   try {
     visited = localStorage.getItem("visited");
+    flowState = localStorage.getItem("taplove_flow_state");
   } catch (e) {
     return;
   }
 
-  if (visited) {
+  if (!visited && !flowState) {
+    try {
+      localStorage.setItem("visited", "true");
+      localStorage.setItem("taplove_flow_state", "redirectedToTapLove");
+    } catch (e) {}
+
+    window.location.href = "https://riceeeeee.github.io/tap-for-love/";
     return;
   }
 
-  try {
-    localStorage.setItem("visited", "true");
-  } catch (e) {}
+  if (flowState === "redirectedToTapLove") {
+    try {
+      localStorage.setItem("taplove_flow_state", "completedFirstRound");
+    } catch (e) {}
+    return;
+  }
 
-  window.location.href = "https://riceeeeee.github.io/tap-for-love/";
+  if (flowState === "completedFirstRound") {
+    window.location.replace("/nfc");
+  }
 }
 
 handleFirstVisitRedirect();
