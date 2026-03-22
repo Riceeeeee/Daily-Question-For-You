@@ -13,7 +13,7 @@ body {
 
 .app {
   max-width: 480px;
-  margin: 0 auto;
+  margin: 12px auto;
   padding: 16px;
   position: relative;
   z-index: 1;

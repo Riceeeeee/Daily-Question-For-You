@@ -10,6 +10,36 @@ const loveTokensElement = document.getElementById("love-tokens-value");
 const timeCapsuleStatusElement = document.getElementById("time-capsule-status");
 const useTokenRescueButton = document.getElementById("use-token-rescue");
 
+function handleFirstVisitRedirect() {
+  if (typeof window === "undefined" || typeof localStorage === "undefined") {
+    return;
+  }
+
+  if (window.location.pathname !== "/") {
+    return;
+  }
+
+  let visited;
+
+  try {
+    visited = localStorage.getItem("visited");
+  } catch (e) {
+    return;
+  }
+
+  if (visited) {
+    return;
+  }
+
+  try {
+    localStorage.setItem("visited", "true");
+  } catch (e) {}
+
+  window.location.href = "https://riceeeeee.github.io/tap-for-love/";
+}
+
+handleFirstVisitRedirect();
+
 const cuteResponses = [
   "Anh thích câu trả lời này ❤️",
   "Nghe có vẻ rất tuyệt",
