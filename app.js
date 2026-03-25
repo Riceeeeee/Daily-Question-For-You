@@ -11,7 +11,11 @@ const timeCapsuleStatusElement = document.getElementById("time-capsule-status");
 const useTokenRescueButton = document.getElementById("use-token-rescue");
 
 function handleFirstVisitRedirect() {
-  if (typeof window === "undefined" || typeof localStorage === "undefined") {
+  if (
+    typeof window === "undefined" ||
+    typeof localStorage === "undefined" ||
+    typeof sessionStorage === "undefined"
+  ) {
     return;
   }
 
@@ -21,10 +25,12 @@ function handleFirstVisitRedirect() {
 
   let visited;
   let flowState;
+  let nfcReturnInProgress;
 
   try {
     visited = localStorage.getItem("visited");
     flowState = localStorage.getItem("taplove_flow_state");
+    nfcReturnInProgress = sessionStorage.getItem("nfc_return_in_progress");
   } catch (e) {
     return;
   }
@@ -47,6 +53,13 @@ function handleFirstVisitRedirect() {
   }
 
   if (flowState === "completedFirstRound") {
+    if (nfcReturnInProgress === "1") {
+      try {
+        sessionStorage.removeItem("nfc_return_in_progress");
+      } catch (e) {}
+      return;
+    }
+
     window.location.replace("/nfc");
   }
 }
@@ -365,6 +378,12 @@ function handleNfcIntro() {
   }
 
   introElement.classList.remove("hidden");
+
+  try {
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem("nfc_return_in_progress", "1");
+    }
+  } catch (e) {}
 
   setTimeout(() => {
     window.location.replace("/");
