@@ -340,14 +340,15 @@ async function saveAnswer(question, answerText, today, dayOfYear) {
     return { error: new Error("Chưa cấu hình Supabase. Vui lòng kiểm tra supabase.js.") };
   }
 
-  const { error } = await window.supabase.from("answers").insert([
-    {
-      question,
-      answer: answerText,
-      created_at: today.toISOString(),
-      day_number: dayOfYear
-    }
-  ]);
+  const { error } = await window.supabase
+    .from("answers")
+    .insert([
+      {
+        question,
+        answer: answerText,
+        created_at: today.toISOString()
+      }
+    ]);
 
   if (error) {
     return { error };
